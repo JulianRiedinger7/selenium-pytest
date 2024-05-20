@@ -17,7 +17,7 @@ correct_credentials = {
 
 
 @pytest.mark.parametrize("username, password", incorrect_credentials)
-@pytest.mark.skip
+@pytest.mark.login
 def test_invalid_login(driver, username, password):
     login_page = LoginPage(driver)
     login_page.navigate_login()
@@ -33,6 +33,7 @@ def test_invalid_login(driver, username, password):
         f"Error texts are different, found: {error_message_text}"
 
 
+@pytest.mark.login
 def test_valid_login(driver):
     login_page = LoginPage(driver)
     login_page.navigate_login()
