@@ -13,6 +13,7 @@ def pytest_addoption(parser):
     parser.addoption("--browser", action="store", default="chrome",
                      help="Type of browser: Chrome, Firefox, Edge")
 
+
 @pytest.fixture()
 def driver(request):
     browser_type = request.config.getoption("--browser").lower()
@@ -29,5 +30,6 @@ def driver(request):
     else:
         raise ValueError(f"Browser {browser_type} is not supported")
 
+    driver.maximize_window()
     yield driver
     driver.quit()
