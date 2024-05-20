@@ -9,8 +9,8 @@ class BasePage:
     def navigate_to(self, url: str):
         self.driver.get(url)
 
-    def wait_for_element(self, locator):
-        return WebDriverWait(self.driver, 10).until(
+    def wait_for_element(self, locator, timeout=10):
+        return WebDriverWait(self.driver, timeout).until(
             EC.visibility_of_element_located(locator)
         )
 
@@ -18,5 +18,6 @@ class BasePage:
         self.wait_for_element(locator).click()
 
     def type_text(self, locator, text: str):
-        self.wait_for_element(locator).send_keys(text)
-
+        element = self.wait_for_element(locator)
+        element.clear()
+        element.send_keys(text)

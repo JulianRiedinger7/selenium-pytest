@@ -8,7 +8,6 @@ from webdriver_manager.firefox import GeckoDriverManager
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 
-@pytest.fixture()
 def pytest_addoption(parser):
     parser.addoption("--browser", action="store", default="chrome",
                      help="Type of browser: Chrome, Firefox, Edge")

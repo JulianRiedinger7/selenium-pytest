@@ -4,13 +4,14 @@ from pages.base_page import BasePage
 
 
 class LoginPage(BasePage):
-    USERNAME_INPUT = (By.ID, "username"),
-    PASSWORD_INPUT = (By.ID, "password"),
+    USERNAME_INPUT = (By.ID, "username")
+    PASSWORD_INPUT = (By.ID, "password")
     SIGN_IN_BUTTON = (By.NAME, "commit")
+    ERROR_MESSAGE = (By.ID, "flash_alert")
 
 
-    def navigate_login(self, url: str):
-        self.navigate_to(url)
+    def navigate_login(self):
+        self.navigate_to("https://travel.agileway.net/")
 
 
     def type_username(self, username: str):
@@ -24,3 +25,6 @@ class LoginPage(BasePage):
     def click_sign_in_button(self):
         self.click_on(self.SIGN_IN_BUTTON)
 
+
+    def get_error_message_text(self) -> str:
+        return self.wait_for_element(self.ERROR_MESSAGE).text
