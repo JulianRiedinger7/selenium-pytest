@@ -8,7 +8,7 @@ class LoginPage(BasePage):
     PASSWORD_INPUT = (By.ID, "password")
     SIGN_IN_BUTTON = (By.NAME, "commit")
     ERROR_MESSAGE = (By.ID, "flash_alert")
-
+    REMEMBER_ME_CHECKBOX = (By.ID, "remember_me")
 
     def navigate_login(self):
         self.navigate_to("https://travel.agileway.net/")
@@ -28,3 +28,16 @@ class LoginPage(BasePage):
 
     def get_error_message_text(self) -> str:
         return self.wait_for_element(self.ERROR_MESSAGE).text
+
+
+    def select_remember_me_checkbox(self):
+        self.select_element(self.REMEMBER_ME_CHECKBOX)
+
+
+    def login(self, username: str, password: str):
+        self.type_username(username)
+        self.type_password(password)
+        self.select_remember_me_checkbox()
+        self.click_sign_in_button()
+
+    
