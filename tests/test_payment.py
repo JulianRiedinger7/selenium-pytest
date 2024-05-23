@@ -1,3 +1,4 @@
+import allure
 import pytest
 
 from pages.details_page import DetailsPage
@@ -27,7 +28,12 @@ def flight_details(driver):
 
     return flight_data
 
-
+@allure.title("Payment and passenger details are the same as flight selection")
+@allure.epic("Web UI")
+@allure.feature("Payment")
+@allure.story("Valid payments details")
+@allure.severity(allure.severity_level.CRITICAL)
+@pytest.mark.payment
 def test_payment(driver, flight_details):
     passenger_info = {
         "first_name": "Julian",
@@ -38,34 +44,37 @@ def test_payment(driver, flight_details):
         "expiry_year": "2027"
     }
 
-    details_page = DetailsPage(driver)
+    with allure.step("Given i am on the details page"):
+        details_page = DetailsPage(driver)
 
-    details_page.type_first_name(passenger_info.get("first_name"))
-    details_page.type_last_name(passenger_info.get("last_name"))
-    details_page.click_next_button()
+    with allure.step("When i enter the passenger name and credit card and click on pay now button"):
+        details_page.type_first_name(passenger_info.get("first_name"))
+        details_page.type_last_name(passenger_info.get("last_name"))
+        details_page.click_next_button()
 
-    assert "flights/passenger" in driver.current_url
+        assert "flights/passenger" in driver.current_url
 
-    payment_page = PaymentPage(driver)
+        payment_page = PaymentPage(driver)
 
-    fare_details = payment_page.get_fare_details_text()
-    expected_fare_details = f"{flight_details.get("trip_type").lower().replace(" ", "")} {flight_details.get("from_port")} to {flight_details.get("to_port")}"
-    card_holder_value = payment_page.get_holder_name_input_value()
-    passenger_full_name = f"{passenger_info.get("first_name")} {passenger_info.get("last_name")}"
+        fare_details = payment_page.get_fare_details_text()
+        expected_fare_details = f"{flight_details.get("trip_type").lower().replace(" ", "")} {flight_details.get("from_port")} to {flight_details.get("to_port")}"
+        card_holder_value = payment_page.get_holder_name_input_value()
+        passenger_full_name = f"{passenger_info.get("first_name")} {passenger_info.get("last_name")}"
 
-    assert expected_fare_details == fare_details, f"Incorrect fare details: found {fare_details}"
-    assert passenger_full_name == card_holder_value, f"Incorrect card holder, found {card_holder_value}"
+        assert expected_fare_details == fare_details, f"Incorrect fare details: found {fare_details}"
+        assert passenger_full_name == card_holder_value, f"Incorrect card holder, found {card_holder_value}"
 
-    payment_page.select_card_type(passenger_info.get("card_type"))
-    payment_page.type_card_number(passenger_info.get("card_number"))
-    payment_page.select_expiry(passenger_info.get("expiry_month"), passenger_info.get("expiry_year"))
-    payment_page.click_pay_now_button()
+        payment_page.select_card_type(passenger_info.get("card_type"))
+        payment_page.type_card_number(passenger_info.get("card_number"))
+        payment_page.select_expiry(passenger_info.get("expiry_month"), passenger_info.get("expiry_year"))
+        payment_page.click_pay_now_button()
 
-    confirmation_details = payment_page.get_confirmation_details_text()
-    transformed_departing_date = transform_date(
-        f"{flight_details.get("departing_day")} {flight_details.get("departing_month")}")
+    with allure.step("Then i should be able to see the corresponding confirmation details"):
+        confirmation_details = payment_page.get_confirmation_details_text()
+        transformed_departing_date = transform_date(
+            f"{flight_details.get("departing_day")} {flight_details.get("departing_month")}")
 
-    assert flight_details.get("trip_type").lower().replace(" ", "") in confirmation_details
-    assert (f"{transformed_departing_date} {flight_details.get("from_port")} to {flight_details.get("to_port")}"
-            in confirmation_details)
-    assert passenger_full_name in payment_page.get_passenger_details_text(), "Full name incorrect"
+        assert flight_details.get("trip_type").lower().replace(" ", "") in confirmation_details
+        assert (f"{transformed_departing_date} {flight_details.get("from_port")} to {flight_details.get("to_port")}"
+                in confirmation_details)
+        assert passenger_full_name in payment_page.get_passenger_details_text(), "Full name incorrect"

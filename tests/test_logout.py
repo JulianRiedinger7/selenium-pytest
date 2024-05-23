@@ -1,9 +1,8 @@
+import allure
 import pytest
 
 from pages.header_page import HeaderPage
 from pages.login_page import LoginPage
-from pages.select_flight_page import SelectFlightPage
-
 
 @pytest.fixture()
 def login(driver):
@@ -12,12 +11,21 @@ def login(driver):
     login_page.login("agileway", "testwise")
     return login_page
 
+@allure.title("Logout successful message appears after sign off")
+@allure.epic("Web UI")
+@allure.feature("Logout")
+@allure.story("Valid logout")
+@allure.severity(allure.severity_level.NORMAL)
+@pytest.mark.logout
 def test_logout(driver, login):
-    assert "start" in driver.current_url
+    with allure.step("Given i am already logged in"):
+        assert "start" in driver.current_url
 
-    header_page = HeaderPage(driver)
+    with allure.step("When i click on the sign off button"):
+        header_page = HeaderPage(driver)
 
-    header_page.click_sign_off_button()
+        header_page.click_sign_off_button()
 
-    assert "/login" in driver.current_url
-    assert "Signed out!" == login.get_notice_message_text()
+    with allure.step("Then i should be able to see a successful signed out message"):
+        assert "/login" in driver.current_url
+        assert "Signed out!" == login.get_notice_message_text()
